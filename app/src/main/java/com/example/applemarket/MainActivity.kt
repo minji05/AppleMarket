@@ -1,5 +1,6 @@
 package com.example.applemarket
 
+import android.app.AlertDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -102,4 +103,19 @@ class MainActivity : AppCompatActivity() {
                 }
                 manager.notify(11, builder.build())
             }
+
+    override fun onBackPressed() {
+        var builder = AlertDialog.Builder(this)
+        builder.setTitle("종료")
+        builder.setMessage("정말 종료하시겠습니까?")
+        builder.setIcon(R.drawable.bubble)
+        builder.setPositiveButton("확인") { dialog, which ->
+            finish() // 앱 종료
+        }
+        builder.setNegativeButton("취소") { dialog, which ->
+            dialog.dismiss() // 다이얼로그 닫기
+        }
+
+        builder.show()
+    }
     }
