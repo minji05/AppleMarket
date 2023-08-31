@@ -1,5 +1,6 @@
 package com.example.applemarket
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -168,17 +169,18 @@ class MainActivity : AppCompatActivity() {
 
                 val intent = Intent(this@MainActivity, DetailActivity::class.java)
                 intent.putExtra("selectedItem", selectedItem) // 객체를 intent에 추가
-                startActivity(intent)
+                intent.putExtra("position", position)
+                startActivityForResult(intent, REQUEST_DETAIL) // DetailActivity 시작
             }
         }
 
-            // 아이템 롱클릭  리스너 설정
-            adapter.itemLongClick = object : MyAdapter.ItemLongClick  {
-                override fun onLongClick(view: View, position: Int) {
-                    val selectedItem = dataList[position]
+        // 아이템 롱클릭  리스너 설정
+        adapter.itemLongClick = object : MyAdapter.ItemLongClick  {
+            override fun onLongClick(view: View, position: Int) {
+                val selectedItem = dataList[position]
 
-                    DeleteDialog(selectedItem, position)
-                }
+                DeleteDialog(selectedItem, position)
+            }
         }
         binding.notification.setOnClickListener {
             notification()
@@ -218,6 +220,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     // 플로팅 버튼 나타내기 함수
     private fun showFloatingAction() {
         if (!isVisible) {
@@ -237,6 +240,7 @@ class MainActivity : AppCompatActivity() {
             binding.floatingBtn.setImageResource(R.drawable.uploading)
         }
     }
+
 
     fun notification() {
         val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -306,6 +310,23 @@ class MainActivity : AppCompatActivity() {
         builder.show()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_DETAIL && resultCode == Activity.RESULT_OK && data != null) {
+            val position = data.getIntExtra("position", -1)
+            val updatedItem = data.getParcelableExtra<MyItem>("updatedItem")
+            val liked = data.getBooleanExtra("liked", false)
+
+            if (position != -1 && updatedItem != null) {
+                // 아이템 업데이트 및 리스트 갱신
+                dataList[position] = updatedItem
+                adapter.notifyItemChanged(position)
+
+            }
+        }
+    }
+
+
     private fun DeleteDialog(items: MyItem, position: Int) {
         var builder = AlertDialog.Builder(this)
         builder.setTitle("상품 삭제")
@@ -328,5 +349,8 @@ class MainActivity : AppCompatActivity() {
         adapter.notifyItemRangeChanged(position, dataList.size)
     }
 
-}
+    companion object {
+        private const val REQUEST_DETAIL = 101
+    }
 
+}

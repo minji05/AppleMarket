@@ -10,14 +10,14 @@ import java.text.DecimalFormat
 class MyAdapter(val Items: MutableList<MyItem>) : RecyclerView.Adapter<MyAdapter.Holder>() {
 
     interface ItemClick {
-        fun onClick(view : View, position : Int)
+        fun onClick(view: View, position: Int)
     }
 
     interface ItemLongClick {
         fun onLongClick(view: View, position: Int)
     }
 
-    var itemClick : ItemClick? = null
+    var itemClick: ItemClick? = null
     var itemLongClick: ItemLongClick? = null
 
 
@@ -37,6 +37,13 @@ class MyAdapter(val Items: MutableList<MyItem>) : RecyclerView.Adapter<MyAdapter
         holder.itemView.setOnLongClickListener {
             itemLongClick?.onLongClick(it, position)
             true
+        }
+
+        // 좋아요 상태에 따라 아이콘 변경
+        if (item.isLike) {
+            holder.binding.interestImg.setImageResource(R.drawable.heart)
+        } else {
+            holder.binding.interestImg.setImageResource(R.drawable.unheart)
         }
     }
 
@@ -77,8 +84,15 @@ class MyAdapter(val Items: MutableList<MyItem>) : RecyclerView.Adapter<MyAdapter
             val formattedPrice = priceFormat.format(item.price.toInt())
             price.text = formattedPrice
 
-            commentTxt.text = item.like.toString()
-            interestTxt.text = item.chat.toString()
+            commentTxt.text = item.commentCount.toString()
+            interestTxt.text = item.likeCount.toString() // 이 부분 추가
+
+            // 좋아요 상태에 따라 아이콘 변경
+            if (item.isLike) {
+                binding.interestImg.setImageResource(R.drawable.heart)
+            } else {
+                binding.interestImg.setImageResource(R.drawable.unheart)
+            }
         }
-    }
-}
+    }}
+

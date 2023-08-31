@@ -113,7 +113,7 @@
                     android:layout_gravity="center"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="2dp"
-                    app:srcCompat="@drawable/heart" />
+                    app:srcCompat="@drawable/unheart" />
 
                 <TextView
                     android:id="@+id/interestTxt"

@@ -10,8 +10,9 @@ data class MyItem(
     val seller: String,
     val price: Int,
     val address: String,
-    val like: Int,
-    val chat: Int
+    var likeCount: Int = 0,
+    val commentCount: Int,
+    var isLike: Boolean = false
 ) : Parcelable {
 
     // Parcelable 인터페이스를 구현하기 위한 코드
@@ -28,8 +29,8 @@ data class MyItem(
         dest.writeString(seller)
         dest.writeInt(price)
         dest.writeString(address)
-        dest.writeInt(like)
-        dest.writeInt(chat)
+        dest.writeInt(likeCount)
+        dest.writeInt(commentCount)
     }
 
     //CREATOR는 Parcelable 객체를 생성하고 배열을 생성하기 위한 컴패니언 객체

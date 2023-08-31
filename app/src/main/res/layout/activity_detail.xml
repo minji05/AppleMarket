@@ -178,13 +178,13 @@
             android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/btn_favorite"
+                android:id="@+id/likeBtn"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_margin="20dp"
                 android:background="@null"
                 android:scaleType="fitXY"
-                android:src="@drawable/heart" />
+                android:src="@drawable/unheart" />
 
             <View
                 android:layout_width="1dp"
