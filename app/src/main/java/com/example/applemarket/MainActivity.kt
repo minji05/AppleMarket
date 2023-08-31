@@ -20,19 +20,20 @@ import com.example.applemarket.databinding.ActivityMainBinding
 import java.text.DecimalFormat
 
 class MainActivity : AppCompatActivity() {
-
+    private lateinit var dataList: MutableList<MyItem>
     private lateinit var binding: ActivityMainBinding
     private lateinit var scrollListener: RecyclerView.OnScrollListener
-    private var isFabVisible = false
-
+    private var isVisible = false
+    private lateinit var adapter: MyAdapter // Adapter 변수 선언 추가
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         // 데이터 원본 준비
-        val dataList = mutableListOf<MyItem>()
+        dataList = mutableListOf<MyItem>()
         dataList.add(
             MyItem(
                 R.drawable.sample1,
@@ -156,7 +157,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.productList.adapter = MyAdapter(dataList)
 
-        val adapter = MyAdapter(dataList)
+        adapter = MyAdapter(dataList)
         binding.productList.adapter = adapter
         binding.productList.layoutManager = LinearLayoutManager(this)
 
@@ -170,16 +171,25 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
+
+            // 아이템 롱클릭  리스너 설정
+            adapter.itemLongClick = object : MyAdapter.ItemLongClick  {
+                override fun onLongClick(view: View, position: Int) {
+                    val selectedItem = dataList[position]
+
+                    DeleteDialog(selectedItem, position)
+                }
+        }
         binding.notification.setOnClickListener {
             notification()
         }
 
         // 플로팅 버튼과 스크롤 이벤트 설정
-        setupFloatingActionButton()
+        FloatingActionButton()
     }
 
     // 플로팅 버튼과 스크롤 이벤트 설정 함수
-    private fun setupFloatingActionButton() {
+    private fun FloatingActionButton() {
         // 스크롤 이벤트 리스너 설정
         scrollListener = object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -190,10 +200,10 @@ class MainActivity : AppCompatActivity() {
 
                 if (isScrollingUp) {
                     // 스크롤을 위로 올릴 때, 플로팅 버튼 나타내기
-                    showFabWithAnimation()
+                    showFloatingAction()
                 } else {
                     // 스크롤을 아래로 내릴 때, 플로팅 버튼 숨기기
-                    hideFabWithAnimation()
+                    hideFloatingAction()
                 }
             }
         }
@@ -204,14 +214,14 @@ class MainActivity : AppCompatActivity() {
         binding.floatingBtn.setOnClickListener {
             // 스크롤을 최상단으로 이동하고 플로팅 버튼 숨기기
             binding.productList.scrollToPosition(0)
-            hideFabWithAnimation()
+            hideFloatingAction()
         }
     }
 
     // 플로팅 버튼 나타내기 함수
-    private fun showFabWithAnimation() {
-        if (!isFabVisible) {
-            isFabVisible = true
+    private fun showFloatingAction() {
+        if (!isVisible) {
+            isVisible = true
             // 플로팅 버튼을 나타내고 아이콘 변경 (위로 화살표 아이콘)
             binding.floatingBtn.show()
             binding.floatingBtn.setImageResource(R.drawable.uploading)
@@ -219,9 +229,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     // 플로팅 버튼 숨기기 함수
-    private fun hideFabWithAnimation() {
-        if (isFabVisible) {
-            isFabVisible = false
+    private fun hideFloatingAction() {
+        if (isVisible) {
+            isVisible = false
             // 플로팅 버튼을 숨기고 아이콘 변경 (위로 화살표 아이콘)
             binding.floatingBtn.hide()
             binding.floatingBtn.setImageResource(R.drawable.uploading)
@@ -295,4 +305,28 @@ class MainActivity : AppCompatActivity() {
 
         builder.show()
     }
+
+    private fun DeleteDialog(items: MyItem, position: Int) {
+        var builder = AlertDialog.Builder(this)
+        builder.setTitle("상품 삭제")
+        builder.setMessage("상품을 정말 삭제하시겠습니까?")
+        builder.setIcon(R.drawable.bubble)
+        builder.setPositiveButton("확인") { dialog, which ->
+            deleteItem(position)
+        }
+        builder.setNegativeButton("취소") { dialog, which ->
+            dialog.dismiss() // 다이얼로그 닫기
+        }
+
+        builder.show()
+    }
+
+    // 아이템을 삭제하고 리스트를 업데이트하는 함수
+    private fun deleteItem(position: Int) {
+        dataList.removeAt(position)
+        adapter.notifyItemRemoved(position)
+        adapter.notifyItemRangeChanged(position, dataList.size)
+    }
+
 }
+

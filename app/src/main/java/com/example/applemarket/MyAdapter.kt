@@ -13,7 +13,13 @@ class MyAdapter(val Items: MutableList<MyItem>) : RecyclerView.Adapter<MyAdapter
         fun onClick(view : View, position : Int)
     }
 
+    interface ItemLongClick {
+        fun onLongClick(view: View, position: Int)
+    }
+
     var itemClick : ItemClick? = null
+    var itemLongClick: ItemLongClick? = null
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val binding = ItemListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -21,17 +27,23 @@ class MyAdapter(val Items: MutableList<MyItem>) : RecyclerView.Adapter<MyAdapter
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.itemView.setOnClickListener {  //클릭이벤트추가부분
+        val item = Items[position]
+        holder.bind(item)
+
+        holder.itemView.setOnClickListener {
             itemClick?.onClick(it, position)
         }
 
-        val item = Items[position]
-        holder.bind(item)
+        holder.itemView.setOnLongClickListener {
+            itemLongClick?.onLongClick(it, position)
+            true
+        }
     }
 
     override fun getItemId(position: Int): Long {
         return position.toLong()
     }
+
 
     override fun getItemCount(): Int {
         return Items.size
