@@ -291,6 +291,12 @@ class MainActivity : AppCompatActivity() {
             setWhen(System.currentTimeMillis())
             setContentTitle("키워드 알림")
             setContentText("설정한 키워드에 대한 알림이 도착했습니다.")
+            setContentIntent(pendingIntent)
+            setAutoCancel(true)
+
+            // 큰 아이콘 이미지 설정
+            val largeIconBitmap = BitmapFactory.decodeResource(resources, R.drawable.circumference)
+            setLargeIcon(largeIconBitmap)
         }
         manager.notify(11, builder.build())
     }
@@ -330,12 +336,10 @@ class MainActivity : AppCompatActivity() {
                     dataList[position].isLike = false
                     dataList[position].likeCount = updatedItem.likeCount
                 }
-
-                // 메인 화면의 아이템 상태를 반영하여 화면을 갱신
-                adapter.notifyDataSetChanged()
             }
         }
     }
+
     private fun DeleteDialog(items: MyItem, position: Int) {
         var builder = AlertDialog.Builder(this)
         builder.setTitle("상품 삭제")
