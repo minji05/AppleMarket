@@ -25,14 +25,8 @@ class MyAdapter(val Items: MutableList<MyItem>) : RecyclerView.Adapter<MyAdapter
             itemClick?.onClick(it, position)
         }
 
-        holder.productImg.setImageResource(Items[position].productImg)
-        holder.productName.text = Items[position].productName
-        holder.address.text = Items[position].address
-        val priceFormat = DecimalFormat("#,###")
-        val formattedPrice = priceFormat.format(Items[position].price.toInt())
-        holder.price.text = formattedPrice
-        holder.commentTxt.text = Items[position].like.toString()
-        holder.interestTxt.text = Items[position].chat.toString()
+        val item = Items[position]
+        holder.bind(item)
     }
 
     override fun getItemId(position: Int): Long {
@@ -50,5 +44,29 @@ class MyAdapter(val Items: MutableList<MyItem>) : RecyclerView.Adapter<MyAdapter
         val price = binding.price
         val commentTxt = binding.commentTxt
         val interestTxt = binding.interestTxt
+
+        fun bind(item: MyItem) {
+            productImg.setImageResource(item.productImg)
+
+            // Handle product name
+            val maxLines = 2
+            val ellipsis = "..."
+            val nameLines = item.productName.split("\\n")
+            val nameToShow = if (nameLines.size > maxLines) {
+                nameLines.take(maxLines).joinToString("\n") + ellipsis
+            } else {
+                item.productName
+            }
+            productName.text = nameToShow
+
+            address.text = item.address
+
+            val priceFormat = DecimalFormat("#,###")
+            val formattedPrice = priceFormat.format(item.price.toInt())
+            price.text = formattedPrice
+
+            commentTxt.text = item.like.toString()
+            interestTxt.text = item.chat.toString()
+        }
     }
 }
