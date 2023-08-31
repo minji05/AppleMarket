@@ -322,11 +322,20 @@ class MainActivity : AppCompatActivity() {
                 dataList[position] = updatedItem
                 adapter.notifyItemChanged(position)
 
+                // 메인 화면의 아이템 상태 갱신
+                if (liked) {
+                    dataList[position].isLike = true
+                    dataList[position].likeCount = updatedItem.likeCount
+                } else {
+                    dataList[position].isLike = false
+                    dataList[position].likeCount = updatedItem.likeCount
+                }
+
+                // 메인 화면의 아이템 상태를 반영하여 화면을 갱신
+                adapter.notifyDataSetChanged()
             }
         }
     }
-
-
     private fun DeleteDialog(items: MyItem, position: Int) {
         var builder = AlertDialog.Builder(this)
         builder.setTitle("상품 삭제")
@@ -353,4 +362,10 @@ class MainActivity : AppCompatActivity() {
         private const val REQUEST_DETAIL = 101
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        // 아이템 상태를 업데이트하여 화면을 갱신
+        adapter.notifyDataSetChanged()
+    }
 }
